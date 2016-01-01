@@ -151,7 +151,8 @@ String FormatearHora(int h, int m) {
 int NivelPlato() {
   int d = GetDistance(PINTRIGGERPlato, PINECHOPlato);
   Serial.print("Nivel Plato: ");
-  Serial.println(d);  
+  Serial.println(d); 
+  return d; 
 }
 
 bool PlatoEstaVacio() {
@@ -163,7 +164,8 @@ int NivelDeposito() {
   int nivel = (profundidadDeposito - d) * 100 / profundidadDeposito;
   Serial.print("Nivel Deposito: ");
   Serial.print(nivel);
-  Serial.println("%");  
+  Serial.println("%");
+  return nivel;  
 }
 
 bool DepositoEstaVacio() {
