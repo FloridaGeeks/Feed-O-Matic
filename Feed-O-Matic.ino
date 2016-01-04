@@ -1,12 +1,10 @@
 //Libraries included
-#include <Servo.h>
+#include <Stepper.h>
 #include <TimerOne.h>
 #include <Wire.h>
 
-//Servo declaration
-Servo myservo;
-int servoPosicionReposo = 180;
-int servoPosicionAbierto = 90;
+//Stepper settings
+const int stepsPerRevolution = 48;
 
 //Variable para manejar el conteo de segundos del timer interrupt
 int contador = 0;
@@ -15,8 +13,7 @@ int contador = 0;
 byte second, minute, hour, dayOfWeek, dayOfMonth, month, year;
 
 //Variables para setear la medida de la racion
-int tiempoCarga = 3000; //define cuantos milisegundos se mantendra abierto el servo
-int cargasPorRacion = 3; //define cuantas veces se accionara el servo
+int cargasPorRacion = 48; //define cuantas veces se accionara el servo
 
 //Variables para setear los niveles de reposicion del plato y del deposito
 int nivelReposicionPlato = 18;
@@ -38,7 +35,7 @@ const int PINTRIGGERDeposito = 2;
 const int PINECHODeposito = 3;
 const int PINTRIGGERPlato = 4;
 const int PINECHOPlato = 5;
-const int PINSERVO = 9;
+Stepper myStepper(stepsPerRevolution, 8, 9, 10, 11);
 
 //Conversiones entre formatos del RTC DS3231
 #define DS3231_I2C_ADDRESS 0x68
@@ -56,7 +53,7 @@ byte bcdToDec(byte val)
 void setup() {
   Serial.begin(9600);
 
-  myservo.attach(PINSERVO);
+  myStepper.setSpeed(120);
 
   pinMode(PINTRIGGERDeposito, OUTPUT);
   pinMode(PINECHODeposito, INPUT);
@@ -182,12 +179,8 @@ void EntregarRacion() {
 }
 
 void Cargar() {
-  myservo.write(servoPosicionReposo);
-  myservo.write(servoPosicionAbierto);
-  Serial.println("Abre Servo");
-  delay(tiempoCarga);
-  myservo.write(servoPosicionReposo);
-  Serial.println("Cierra Servo");
+  myStepper.step(stepsPerRevolution);
+  Serial.println("Gira motor");
 }
 
 void ParsearInputSerial(String s) {
@@ -288,4 +281,3 @@ void readDS3231time(byte *second,
   *month = bcdToDec(Wire.read());
   *year = bcdToDec(Wire.read());
 }
-
